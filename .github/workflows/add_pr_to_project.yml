@@ -1,0 +1,30 @@
+name: Auto Add PRs to Project
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Compute deadline +2 weekdays
+      - name: Compute Deadline
+        id: deadline
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          DEADLINE=$(date -d "$TODAY +2 weekdays" +%Y-%m-%d)
+          echo "deadline=$DEADLINE" >> $GITHUB_OUTPUT
+
+      # Step 2: Add PR to project
+      - name: Add PR to Project
+        uses: actions/add-to-project@v0.4.0
+        with:
+          project-url: https://github.com/orgs/BachelorProjectSW/projects/2
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fields: |
+            {
+              "Status": "Peer Review",
+              "Priority": "Medium",
+              "Deadline": "${{ steps.deadline.outputs.deadline }}"
+            }
