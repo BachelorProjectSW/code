@@ -4,11 +4,21 @@ on:
   pull_request:
     types: [opened]
 
+env:
+  ACTIONS_STEP_DEBUG: true  # enables debug logging
+
 jobs:
   add-to-project:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Compute deadline +2 weekdays
+      # Step 1: Debug PR info
+      - name: Debug PR info
+        run: |
+          echo "PR URL: ${{ github.event.pull_request.html_url }}"
+          echo "PR Number: ${{ github.event.pull_request.number }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+
+      # Step 2: Compute deadline +2 weekdays
       - name: Compute Deadline
         id: deadline
         run: |
@@ -25,16 +35,37 @@ jobs:
               fi
           done
           echo "deadline=$current_date" >> $GITHUB_OUTPUT
+          echo "Computed Deadline: $current_date"
 
-      # Step 2: Add PR to project
+      # Step 3: Get repo collaborators for random assignee
+      - name: Get repo collaborators
+        id: collaborators
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/collaborators
+          mediaType.previews: ["nebula-preview"]
+
+      # Step 4: Pick a random assignee
+      - name: Pick random assignee
+        id: pick
+        run: |
+          USERS=$(echo '${{ steps.collaborators.outputs.data }}' | jq -r '.[].login')
+          mapfile -t ARR <<<"$USERS"
+          RANDOM_USER=${ARR[$RANDOM % ${#ARR[@]}]}
+          echo "random_user=$RANDOM_USER" >> $GITHUB_OUTPUT
+          echo "Picked assignee: $RANDOM_USER"
+
+      # Step 5: Add PR to Project v2
       - name: Add PR to Project
         uses: actions/add-to-project@v0.4.0
         with:
           project-url: https://github.com/orgs/BachelorProjectSW/projects/2
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
+          item-type: pull_request
           fields: |
             {
               "Status": "Peer Review",
               "Priority": "Medium",
-              "Deadline": "${{ steps.deadline.outputs.deadline }}"
+              "Deadline": "${{ steps.deadline.outputs.deadline }}",
+              "Assignees": "${{ steps.pick.outputs.random_user }}"
             }
