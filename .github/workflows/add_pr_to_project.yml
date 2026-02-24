@@ -39,6 +39,7 @@ jobs:
             --jq '.reviewRequests | length')
           
           if [ "$EXISTING_REVIEWERS" -eq 0 ]; then
+            echo "Peer reviwer already assigned"
             exit 0
           fi
           
