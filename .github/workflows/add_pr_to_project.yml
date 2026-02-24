@@ -2,7 +2,7 @@ name: Auto Add PRs to Project
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize, reopened]
 
 env:
   ACTIONS_STEP_DEBUG: true
