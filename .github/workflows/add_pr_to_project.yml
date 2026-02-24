@@ -27,6 +27,34 @@ jobs:
           echo "deadline=$current_date" >> $GITHUB_OUTPUT
           echo "Computed Deadline: $current_date"
 
+      # Assign random peer reviewer
+      - name: Assign Random Peer Reviewer
+        env:
+          GH_TOKEN: ${{ secrets.ORG_PROJECT_TOKEN }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          # List of all team members (update with your team's GitHub usernames)
+          ALL_REVIEWERS=("DoubleO69420" "glund23student" "Jon" "MadsRantzau49")
+          
+          # Filter out the PR author
+          AVAILABLE_REVIEWERS=()
+          for reviewer in "${ALL_REVIEWERS[@]}"; do
+            if [ "$reviewer" != "$PR_AUTHOR" ]; then
+              AVAILABLE_REVIEWERS+=("$reviewer")
+            fi
+          done
+          
+          # Select random reviewer
+          RANDOM_INDEX=$((RANDOM % ${#AVAILABLE_REVIEWERS[@]}))
+          REVIEWER="${AVAILABLE_REVIEWERS[$RANDOM_INDEX]}"
+          
+          echo "Selected reviewer: $REVIEWER"
+          
+          # Assign reviewer to PR
+          gh pr edit ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --add-reviewer "$REVIEWER"
+
       # Add PR to Project
       - name: Add PR to Project
         id: add-to-project
