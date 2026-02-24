@@ -10,7 +10,17 @@ jobs:
     steps:
       # Add PR to Project
       - name: Add PR to Project
+        id: add-to-project
         uses: actions/add-to-project@v0.4.0
         with:
           project-url: https://github.com/orgs/BachelorProjectSW/projects/2
           github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
+      
+      # Set custom fields
+      - name: Set Status and Priority
+        uses: titoportas/update-project-fields@v0.1.0
+        with:
+          project-url: https://github.com/orgs/BachelorProjectSW/projects/2
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
+          item-id: ${{ steps.add-to-project.outputs.itemId }}
+          fields: '{"Status":"Peer Review","Priority":"Medium"}'
