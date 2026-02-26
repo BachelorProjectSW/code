@@ -1,0 +1,82 @@
+name: Auto Add PRs to Project
+
+on:
+  pull_request:
+    # Everytime a pull request change
+    types: [opened, synchronize, reopened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute Deadline
+        id: deadline
+        run: |
+          start_date="$(date +%Y-%m-%d)"
+          days_to_add=2
+          current_date="$start_date"
+          added=0
+      
+          while [ $added -lt $days_to_add ]; do
+              current_date=$(date -d "$current_date +1 day" +"%Y-%m-%d")
+              weekday=$(date -d "$current_date" +"%u")
+              if [ "$weekday" -lt 6 ]; then
+                  added=$((added + 1))
+              fi
+          done
+          echo "deadline=$current_date" >> $GITHUB_OUTPUT
+
+      - name: Assign Random Peer Reviewer
+        env:
+          # To use GitHub CLI in a GitHub Actions workflow
+          GH_TOKEN: ${{ secrets.ORG_PROJECT_TOKEN }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          # Check if PR already has reviewers assigned
+          EXISTING_REVIEWERS=$(gh pr view ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --json reviewRequests \
+            --jq '.reviewRequests | length' 2>/dev/null || echo "0")
+          
+          if [ "$EXISTING_REVIEWERS" -gt 0 ]; then
+            echo "Peer reviewer already assigned"
+            exit 0
+          fi
+          
+          ALL_REVIEWERS=("DoubleO69420" "glund23student" "jvincenth" "MadsRantzau49")
+          
+          # Filter out the PR author
+          AVAILABLE_REVIEWERS=()
+          for reviewer in "${ALL_REVIEWERS[@]}"; do
+            if [ "$reviewer" != "$PR_AUTHOR" ]; then
+              AVAILABLE_REVIEWERS+=("$reviewer")
+            fi
+          done
+          
+          # Select random reviewer
+          RANDOM_INDEX=$((RANDOM % ${#AVAILABLE_REVIEWERS[@]}))
+          REVIEWER="${AVAILABLE_REVIEWERS[$RANDOM_INDEX]}"
+          
+          echo "Assigning peer reviewer: $REVIEWER"
+          
+          # Assign reviewer to PR with error handling
+          gh pr edit ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --add-reviewer "$REVIEWER" || echo "Failed to assign reviewer (user may not be a collaborator)"
+
+      - name: Add PR to Project
+        id: add-to-project
+        uses: actions/add-to-project@v0.4.0
+        with:
+          project-url: https://github.com/orgs/BachelorProjectSW/projects/2
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
+      
+      - name: Set Project Status and Fields
+        uses: titoportas/update-project-fields@v0.1.0
+        with:
+          project-url: https://github.com/orgs/BachelorProjectSW/projects/2
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
+          item-id: ${{ steps.add-to-project.outputs.itemId }}
+          field-keys: "Status,Priority,Deadline"
+          field-values: "Peer Review,Medium,${{ steps.deadline.outputs.deadline }}"
+
