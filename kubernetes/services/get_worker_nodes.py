@@ -13,9 +13,8 @@ def get_worker_nodes():
         name = node.metadata.name
         active_node = False
         for condition in node.status.conditions:
-            if condition.type == "Ready":
-                if condition.status == "True":
-                    active_node = True
+            if condition.type == "Ready" and condition.status == "True":
+                active_node = True
 
         if active_node:
             worker_nodes.append({
