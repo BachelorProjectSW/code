@@ -39,4 +39,31 @@ sudo cp /etc/rancher/k3s/k3s.yaml kubernetes/auth
 Make it readable
 sudo chmod 644 kubernetes/auth/k3s.yaml
 
+_____
+Setup docker for getting data from kubernetes network.
+
+step 1)
+Install docker
+sudo apt update
+sudo apt install docker.io -y
+
+step 2)
+start Docker and enable it at boot
+sudo systemctl start docker
+sudo systemctl enable docker
+
+step 3)
+add docker to groups
+sudo usermod -aG docker $USER
+sudo reboot 
+
+step 4)
+Build docker file:
+cd kubernetes
+docker build -t kube-api-server .
+
+step 5)
+Run api server:
+sudo docker run --network=host kube-api-server
+_____
 
