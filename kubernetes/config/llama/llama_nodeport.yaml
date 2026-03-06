@@ -1,13 +1,12 @@
-#Nodeport for testing
+#ClusterIp for testing
 apiVersion: v1
 kind: Service
 metadata:
-  name: llama-nodeport
+  name: llama-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     name: llama-server
   ports:
     - port: 8080
       targetPort: 8080
-      nodePort: 30080
