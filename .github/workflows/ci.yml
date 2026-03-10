@@ -30,6 +30,26 @@ jobs:
         run: |
           ruff check .
 
-      - name: Run Tests
+      - name: Install k3d
         run: |
-          echo "Tests running"
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+      #maybe not needed
+      - name: Install kubectl
+        run: |
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Create cluster
+        run: |
+          bash scripts/create-cluster.sh
+
+      - name: Deploy manifests
+        run: |
+          bash scripts/deploy.sh
+
+      - name: Verify
+        run: |
+          kubectl get nodes
+          kubectl get pods -A
