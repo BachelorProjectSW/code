@@ -2,6 +2,5 @@
 
 set -e
 
-kubectl apply -f manifests/
+kubectl apply -f /home/rantzau/uni/p6/kubernetes_application/src/cluster_api/manifest/
 
-kubectl wait --for=condition=available deployment --all --timeout=300s
