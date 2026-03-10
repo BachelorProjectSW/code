@@ -18,8 +18,12 @@ options:
     extraArgs:
       - arg: "--disable=traefik"
         nodeFilters:
+<<<<<<< HEAD
           - server:0
 
       - arg: "--node-label=llama=true"
         nodeFilters:
           - agent:*
+=======
+          - server:0
+>>>>>>> origin/init_test
