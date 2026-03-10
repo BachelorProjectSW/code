@@ -47,8 +47,3 @@ jobs:
       - name: Deploy manifests
         run: |
           bash scripts/deploy.sh
-
-      - name: Verify
-        run: |
-          kubectl get nodes
-          kubectl get pods -A
