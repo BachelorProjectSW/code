@@ -13,6 +13,9 @@ spec:
       labels:
         name: llama-server
     spec:
+      nodeSelector:
+        llama: "true"
+
       initContainers: #runs before "normal" containers
         - name: download-model
           image: alpine
