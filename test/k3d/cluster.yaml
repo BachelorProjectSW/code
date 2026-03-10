@@ -19,3 +19,7 @@ options:
       - arg: "--disable=traefik"
         nodeFilters:
           - server:0
+
+      - arg: "--node-label=llama=true"
+        nodeFilters:
+          - agent:*
