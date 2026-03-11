@@ -8,4 +8,3 @@ k3d cluster create --config test/k3d/cluster.yaml
 
 k3d kubeconfig get devcluster > src/cluster_api/auth/k3d-devcluster.yaml
 
-export KUBECONFIG=src/cluster_api/auth/k3d-devcluster.yaml

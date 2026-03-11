@@ -7,7 +7,6 @@ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
 #Get CPU type
 ARCH=$(uname -m)
-echo "type: $ARCH"
 case "$ARCH" in
     x86_64)
         C_ARCH="amd64"
