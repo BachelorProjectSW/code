@@ -32,7 +32,7 @@ jobs:
 
       - name: Install k3d and kubectl
         run: |
-          bash test/k3d/setup_kubernetes.sh | bash
+          bash test/k3d/setup_kubernetes.sh 
 
       - name: Create cluster
         run: |
