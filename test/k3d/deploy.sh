@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 export KUBECONFIG=src/cluster_api/auth/k3d-devcluster.yaml
