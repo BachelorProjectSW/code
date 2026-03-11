@@ -45,4 +45,7 @@ jobs:
       - name: setup docker and kubernetes api server
         run: |
           bash test/k3d/setup_api_server.sh
-
+      
+      - name: test
+        run: |
+          pytest
