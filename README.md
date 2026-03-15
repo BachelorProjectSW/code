@@ -149,11 +149,11 @@ The developer is expected to have Node.js and npm installed.
 
 Change into the frontend app directory:
 
-cd src/cluster_frontend
+`cd src/cluster_frontend`
 
 Install dependencies:
 
-npm install
+`npm install`
 
 Next, run the live dev server:
 
@@ -161,9 +161,9 @@ Next, run the live dev server:
 
 Create a production build
 
-npm run build
+`npm run build`
 
 Preview the production build locally
 
-npm run preview
+`npm run preview`
 
