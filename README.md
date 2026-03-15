@@ -157,11 +157,13 @@ npm install
 
 Next, run the live dev server:
 
-npm run dev
+`npm run dev`
 
 Create a production build
+
 npm run build
 
 Preview the production build locally
+
 npm run preview
 
