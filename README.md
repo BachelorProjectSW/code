@@ -152,12 +152,14 @@ Change into the frontend app directory:
 `cd src/cluster_frontend`
 
 Install dependencies:
-
-`npm install`
+```bash
+npm install
+```
 
 Next, run the live dev server:
-
-`npm run dev`
+```bash
+npm run dev
+```
 
 Create a production build
 
